@@ -2,60 +2,126 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
-  <title>賭ノ間 ─ オッズ計算ツール</title>
+  <title>賭ノ間 ─ オッズ計算</title>
   <style>
-    body {
-      background-image: url('https://www.transparenttextures.com/patterns/washi.png');
+    html, body {
+      margin: 0;
+      padding: 0;
+      background-color: #faf7f2;
       font-family: "Yu Mincho", "Hiragino Mincho ProN", serif;
-      color: #2c1a0d;
+      color: #1c1b18;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    .card {
+      background: rgba(255, 255, 255, 0.92);
+      border: 1px solid #d5c8a0;
+      border-radius: 12px;
+      padding: 3em 3em 2em;
+      box-shadow: 0 3px 10px rgba(0,0,0,0.05);
       text-align: center;
-      padding: 2em;
+      width: 350px;
     }
+
     h1 {
-      font-size: 2.5em;
-      letter-spacing: 0.1em;
-      color: #c19a3f;
-      text-shadow: 1px 1px 2px #000;
+      font-size: 1.6em;
+      color: #9b7e3c;
+      letter-spacing: 0.15em;
+      border-bottom: 1px solid #d5c8a0;
+      padding-bottom: 0.4em;
+      margin-bottom: 1.2em;
     }
+
+    p {
+      font-size: 1.05em;
+      margin: 0.6em 0;
+    }
+
     input {
-      padding: 0.5em;
-      margin: 0.3em;
-      border: 2px solid #c19a3f;
-      border-radius: 5px;
-      background: rgba(255, 250, 240, 0.9);
+      width: 85%;
+      padding: 0.7em;
+      margin: 0.5em 0;
+      border: 1px solid #c9b88d;
+      border-radius: 6px;
+      background: #fffdf8;
+      text-align: center;
+      font-size: 1.1em;
     }
+
     button {
-      padding: 0.5em 1em;
-      background: #c19a3f;
+      margin-top: 1em;
+      padding: 0.7em 1.6em;
+      background: #9b7e3c;
       color: #fff;
       border: none;
-      border-radius: 5px;
+      border-radius: 6px;
+      font-size: 1.05em;
       cursor: pointer;
+      transition: background 0.3s;
     }
+
+    button:hover {
+      background: #bfa058;
+    }
+
     #result {
-      margin-top: 1em;
-      font-size: 1.2em;
+      margin-top: 1.6em;
       font-weight: bold;
+      font-size: 1.15em;
+      color: #333;
+      line-height: 1.6em;
+    }
+
+    footer {
+      position: fixed;
+      bottom: 1em;
+      width: 100%;
+      text-align: center;
+      font-size: 0.85em;
+      color: #a69e8e;
     }
   </style>
 </head>
 <body>
-  <h1>賭ノ間 ─ オッズ計算</h1>
-  <p>総投票額（円）<br><input id="total" type="number"></p>
-  <p>対象者への投票額（円）<br><input id="target" type="number"></p>
-  <button onclick="calc()">計算する</button>
-  <div id="result"></div>
+  <div class="card">
+    <h1>賭ノ間 ─ オッズ計算</h1>
+
+    <p>総投票額（元）</p>
+    <input id="total" type="number" placeholder="例：10000">
+
+    <p>対象者への投票額（元）</p>
+    <input id="target" type="number" placeholder="例：2500">
+
+    <br>
+    <button onclick="calc()">計算する</button>
+    <div id="result"></div>
+  </div>
+
+  <footer>© 賭ノ間 / Virtual Currency Odds Tool</footer>
 
   <script>
     function calc() {
       const total = parseFloat(document.getElementById('total').value);
       const target = parseFloat(document.getElementById('target').value);
-      if (!total || !target || target === 0) {
-        document.getElementById('result').innerText = "正しい数値を入力してください。";
+      const resultEl = document.getElementById('result');
+
+      if (!total || !target || target <= 0) {
+        resultEl.innerText = "※数値を正しく入力してください。";
         return;
       }
-      const odds = (total * 0.9) / target;
-      document.getElementById('result').innerText = `オッズ：${odds.toFixed(2)}倍`;
+
+      const taxedTotal = total * 0.9;
+      const deducted = total - taxedTotal;
+      const odds = taxedTotal / target;
+
+      resultEl.innerHTML = `
+        オッズ：<span style="color:#9b7e3c;">${odds.toFixed(2)}</span> 倍<br>
+        使用総額：${taxedTotal.toLocaleString()} 元<br>
+        控除額（10%）：${deducted.toLocaleString()} 元
+      `;
     }
   </script>
 </body>
