@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>賭ノ間 ─ オッズ計算ツール</title>
+  <style>
+    body {
+      background-image: url('https://www.transparenttextures.com/patterns/washi.png');
+      font-family: "Yu Mincho", "Hiragino Mincho ProN", serif;
+      color: #2c1a0d;
+      text-align: center;
+      padding: 2em;
+    }
+    h1 {
+      font-size: 2.5em;
+      letter-spacing: 0.1em;
+      color: #c19a3f;
+      text-shadow: 1px 1px 2px #000;
+    }
+    input {
+      padding: 0.5em;
+      margin: 0.3em;
+      border: 2px solid #c19a3f;
+      border-radius: 5px;
+      background: rgba(255, 250, 240, 0.9);
+    }
+    button {
+      padding: 0.5em 1em;
+      background: #c19a3f;
+      color: #fff;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    #result {
+      margin-top: 1em;
+      font-size: 1.2em;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <h1>賭ノ間 ─ オッズ計算</h1>
+  <p>総投票額（円）<br><input id="total" type="number"></p>
+  <p>対象者への投票額（円）<br><input id="target" type="number"></p>
+  <button onclick="calc()">計算する</button>
+  <div id="result"></div>
+
+  <script>
+    function calc() {
+      const total = parseFloat(document.getElementById('total').value);
+      const target = parseFloat(document.getElementById('target').value);
+      if (!total || !target || target === 0) {
+        document.getElementById('result').innerText = "正しい数値を入力してください。";
+        return;
+      }
+      const odds = (total * 0.9) / target;
+      document.getElementById('result').innerText = `オッズ：${odds.toFixed(2)}倍`;
+    }
+  </script>
+</body>
+</html>
