@@ -166,36 +166,4 @@
     }
   </script>
 </body>
-</html>    msg.style.fontSize = "1.1em";
-    msg.style.color = "#9b7e3c";
-    msg.style.boxShadow = "0 4px 15px rgba(0,0,0,0.1)";
-    msg.style.opacity = "0";
-    msg.style.transition = "opacity 0.6s ease, transform 0.6s ease";
-    msg.style.zIndex = "9999";
-    document.body.appendChild(msg);
-
-    // ふわっと出る
-    setTimeout(() => {
-      msg.style.opacity = "1";
-      msg.style.transform = "translate(-50%, -50%) scale(1.05)";
-    }, 50);
-
-    // 少しして消える
-    setTimeout(() => {
-      msg.style.opacity = "0";
-      msg.style.transform = "translate(-50%, -50%) scale(0.9)";
-    }, 3000);
-
-    // 完全に消す
-    setTimeout(() => {
-      msg.remove();
-    }, 4000);
-  }
-
-  // 「自分が作った！」ボタンを押した時に発動する
-  function claimAuthor() {
-    showOmarunWarning();
-  }
-        </script>
-</body>
 </html>
