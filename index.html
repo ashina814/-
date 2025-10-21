@@ -99,14 +99,17 @@
     <button onclick="calc()">計算する</button>
     <div id="result"></div>
 
-    <!-- 👇 追加した部分 -->
+    <!-- 追加した部分 -->
     <button onclick="claimAuthor()">自分が作った！</button>
   </div>
 
   <footer>© 賭ノ間 / Virtual Currency Odds Tool</footer>
 
+  <!-- ------------ JS（まとめて1つのscript） ------------ -->
   <script>
+    // calc: オッズ計算
     function calc() {
+      console.log('calc() called');
       const total = parseFloat(document.getElementById('total').value);
       const target = parseFloat(document.getElementById('target').value);
       const resultEl = document.getElementById('result');
@@ -127,48 +130,58 @@
       `;
     }
 
-<script>
-function showOmarunWarning() {
-  const msg = document.createElement('div');
-  msg.innerText = "urlちゃんにカッコつけたいのは分かるぞ シナより";
-  Object.assign(msg.style, {
-    position: "fixed",
-    top: "50%",
-    left: "50%",
-    transform: "translate(-50%, -50%)",
-    background: "rgba(255, 255, 255, 0.97)",
-    border: "2px solid #bfa058",
-    borderRadius: "12px",
-    padding: "1.2em 2em",
-    fontSize: "1.1em",
-    color: "#9b7e3c",
-    boxShadow: "0 4px 15px rgba(0,0,0,0.1)",
-    opacity: "0",
-    transition: "opacity 0.6s ease, transform 0.6s ease",
-    zIndex: "99999", // ← 上に出す！
-    pointerEvents: "none", // ← クリックブロック防止
-  });
-  document.body.appendChild(msg);
+    // showOmarunWarning: 中央にふわっと出るメッセージ
+    function showOmarunWarning() {
+      console.log('showOmarunWarning() called');
+      const msg = document.createElement('div');
+      msg.innerText = "urlちゃんにカッコつけたいのは分かるぞ シナより";
 
-  // ふわっと出現
-  setTimeout(() => {
-    msg.style.opacity = "1";
-    msg.style.transform = "translate(-50%, -50%) scale(1.05)";
-  }, 50);
+      Object.assign(msg.style, {
+        position: "fixed",
+        top: "50%",
+        left: "50%",
+        transform: "translate(-50%, -50%)",
+        background: "rgba(255, 255, 255, 0.97)",
+        border: "2px solid #bfa058",
+        borderRadius: "12px",
+        padding: "1.2em 2em",
+        fontSize: "1.1em",
+        color: "#9b7e3c",
+        boxShadow: "0 4px 15px rgba(0,0,0,0.1)",
+        opacity: "0",
+        transition: "opacity 0.6s ease, transform 0.6s ease",
+        zIndex: "99999",
+        pointerEvents: "none"
+      });
 
-  // 消える
-  setTimeout(() => {
-    msg.style.opacity = "0";
-    msg.style.transform = "translate(-50%, -50%) scale(0.9)";
-  }, 3000);
+      document.body.appendChild(msg);
 
-  // DOM削除
-  setTimeout(() => msg.remove(), 4000);
-}
+      // 出現
+      setTimeout(() => {
+        msg.style.opacity = "1";
+        msg.style.transform = "translate(-50%, -50%) scale(1.05)";
+      }, 50);
 
-function claimAuthor() {
-  showOmarunWarning();
-}
-</script>
+      // 消える
+      setTimeout(() => {
+        msg.style.opacity = "0";
+        msg.style.transform = "translate(-50%, -50%) scale(0.9)";
+      }, 3000);
+
+      // 削除
+      setTimeout(() => msg.remove(), 4000);
+    }
+
+    // ボタンから呼ばれる関数（グローバル）
+    function claimAuthor() {
+      console.log('claimAuthor() called');
+      showOmarunWarning();
+    }
+
+    // （オプション）DOMContentLoadedでエラーがないか確認したい時用
+    document.addEventListener('DOMContentLoaded', () => {
+      console.log('DOMContentLoaded: script loaded properly');
+    });
+  </script>
 </body>
 </html>
