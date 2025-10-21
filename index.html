@@ -127,43 +127,48 @@
       `;
     }
 
-    function showOmarunWarning() {
-      const msg = document.createElement('div');
-      msg.innerText = "urlちゃんにカッコつけたいのは分かるぞ シナより";
-      msg.style.position = "fixed";
-      msg.style.top = "50%";
-      msg.style.left = "50%";
-      msg.style.transform = "translate(-50%, -50%)";
-      msg.style.background = "rgba(255, 255, 255, 0.95)";
-      msg.style.border = "2px solid #bfa058";
-      msg.style.borderRadius = "12px";
-      msg.style.padding = "1.2em 2em";
-      msg.style.fontSize = "1.1em";
-      msg.style.color = "#9b7e3c";
-      msg.style.boxShadow = "0 4px 15px rgba(0,0,0,0.1)";
-      msg.style.opacity = "0";
-      msg.style.transition = "opacity 0.6s ease, transform 0.6s ease";
-      msg.style.zIndex = "9999";
-      document.body.appendChild(msg);
+<script>
+function showOmarunWarning() {
+  const msg = document.createElement('div');
+  msg.innerText = "urlちゃんにカッコつけたいのは分かるぞ シナより";
+  Object.assign(msg.style, {
+    position: "fixed",
+    top: "50%",
+    left: "50%",
+    transform: "translate(-50%, -50%)",
+    background: "rgba(255, 255, 255, 0.97)",
+    border: "2px solid #bfa058",
+    borderRadius: "12px",
+    padding: "1.2em 2em",
+    fontSize: "1.1em",
+    color: "#9b7e3c",
+    boxShadow: "0 4px 15px rgba(0,0,0,0.1)",
+    opacity: "0",
+    transition: "opacity 0.6s ease, transform 0.6s ease",
+    zIndex: "99999", // ← 上に出す！
+    pointerEvents: "none", // ← クリックブロック防止
+  });
+  document.body.appendChild(msg);
 
-      setTimeout(() => {
-        msg.style.opacity = "1";
-        msg.style.transform = "translate(-50%, -50%) scale(1.05)";
-      }, 50);
+  // ふわっと出現
+  setTimeout(() => {
+    msg.style.opacity = "1";
+    msg.style.transform = "translate(-50%, -50%) scale(1.05)";
+  }, 50);
 
-      setTimeout(() => {
-        msg.style.opacity = "0";
-        msg.style.transform = "translate(-50%, -50%) scale(0.9)";
-      }, 3000);
+  // 消える
+  setTimeout(() => {
+    msg.style.opacity = "0";
+    msg.style.transform = "translate(-50%, -50%) scale(0.9)";
+  }, 3000);
 
-      setTimeout(() => {
-        msg.remove();
-      }, 4000);
-    }
+  // DOM削除
+  setTimeout(() => msg.remove(), 4000);
+}
 
-    function claimAuthor() {
-      showOmarunWarning();
-    }
-  </script>
+function claimAuthor() {
+  showOmarunWarning();
+}
+</script>
 </body>
 </html>
