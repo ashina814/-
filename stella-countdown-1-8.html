@@ -1,0 +1,807 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>STELLA — GRAND OPENING</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,200;0,300;0,400;1,200;1,300&family=Josefin+Sans:wght@100;200;300&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+:root {
+  --gold: #c9a96e; --gold-light: #e8d5a3; --gold-dim: #6a5030;
+  --bg: #04030A; --bg2: #080611;
+  --text: #e2ddd4; --text-dim: #7a7264; --text-muted: #3e3830;
+  --border: rgba(201,169,110,0.12); --border-b: rgba(201,169,110,0.28);
+}
+
+html { height: 100%; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Josefin Sans', sans-serif;
+  overflow: auto;
+  min-height: 100%;
+  min-height: 100dvh;
+}
+
+/* ── 背景エフェクト ── */
+.stars { position: fixed; inset: 0; pointer-events: none; z-index: 0; }
+.star { position: absolute; width: 1px; height: 1px; background: var(--gold-light); border-radius: 50%; animation: starTwinkle var(--d,4s) ease-in-out infinite var(--delay,0s); opacity: 0; }
+@keyframes starTwinkle { 0%,100%{opacity:0} 50%{opacity:var(--max-opacity,0.4)} }
+
+.radiance { position: fixed; top: 50%; left: 50%; transform: translate(-50%,-50%); width: min(900px,200vw); height: min(900px,200vw); background: radial-gradient(ellipse at center, rgba(201,169,110,0.05) 0%, rgba(100,60,20,0.03) 30%, transparent 65%); animation: radiancePulse 6s ease-in-out infinite; pointer-events: none; z-index: 0; }
+@keyframes radiancePulse { 0%,100%{opacity:0.6;transform:translate(-50%,-50%) scale(1)} 50%{opacity:1;transform:translate(-50%,-50%) scale(1.08)} }
+
+.logo-bg { position: fixed; top: 50%; left: 50%; transform: translate(-50%,-50%); width: min(600px, 100vw); height: min(600px, 100vw); background-image: url("IMG_0667.jpg"); background-size: contain; background-repeat: no-repeat; background-position: center; opacity: 0; pointer-events: none; z-index: 0; filter: blur(1px) saturate(0.4); animation: logoBgReveal 4s ease 1.5s forwards; }
+@keyframes logoBgReveal { 0%{opacity:0} 100%{opacity:0.40} }
+
+.grain { position: fixed; inset: -50%; width: 200%; height: 200%; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E"); opacity: 0.025; pointer-events: none; animation: grainShift 0.15s steps(1) infinite; z-index: 0; }
+@keyframes grainShift { 0%{transform:translate(0,0)} 25%{transform:translate(-3%,-2%)} 50%{transform:translate(2%,3%)} 75%{transform:translate(-1%,2%)} 100%{transform:translate(3%,-1%)} }
+
+.scanlines { position: fixed; inset: 0; background: repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.03) 2px,rgba(0,0,0,0.03) 4px); pointer-events: none; z-index: 0; }
+.curtain { position: fixed; left: 0; right: 0; height: 12vh; pointer-events: none; z-index: 10; }
+.curtain.top { top: 0; background: linear-gradient(to bottom, #04030A, transparent); }
+.curtain.bottom { bottom: 0; background: linear-gradient(to top, #04030A, transparent); }
+
+/* ── カウントダウン画面 ── */
+.scene {
+  position: relative;
+  z-index: 1;
+  min-height: 100vh;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: clamp(1rem, 4vw, 4rem) clamp(0.5rem, 4vw, 2rem);
+  overflow: hidden;
+  /* スマホUIバー分を補正して視覚的中央に */
+  padding-bottom: clamp(2rem, 8vw, 6rem);
+}
+
+.crown { display: flex; flex-direction: column; align-items: center; margin-bottom: clamp(1.2rem, 4vw, 3rem); opacity: 0; animation: riseIn 1.2s cubic-bezier(0.16,1,0.3,1) 0.3s forwards; }
+.crown-line { display: flex; align-items: center; gap: 1.2rem; margin-bottom: 0.8rem; }
+.crown-rule { width: clamp(36px, 8vw, 80px); height: 1px; background: linear-gradient(to right, transparent, var(--gold-dim)); }
+.crown-rule.r { background: linear-gradient(to left, transparent, var(--gold-dim)); }
+.crown-diamond { font-size: clamp(0.32rem, 1vw, 0.45rem); color: var(--gold-dim); letter-spacing: 0.5em; }
+.eyebrow { font-size: clamp(0.36rem, 1.3vw, 0.48rem); font-weight: 100; letter-spacing: 0.7em; text-transform: uppercase; color: var(--text-muted); }
+
+.logo-wrap { position: relative; margin-bottom: 0.5rem; opacity: 0; animation: riseIn 1.4s cubic-bezier(0.16,1,0.3,1) 0.5s forwards; display: flex; justify-content: center; width: 100%; }
+.logo { font-family: 'Cormorant Garamond', serif; font-size: clamp(2.6rem, 13vw, 9rem); font-weight: 200; letter-spacing: 0.5em; text-indent: 0.5em; color: transparent; background: linear-gradient(180deg, var(--gold-light) 0%, var(--gold) 40%, var(--gold-dim) 100%); -webkit-background-clip: text; background-clip: text; line-height: 1; position: relative; white-space: nowrap; }
+.logo::after { content: 'STELLA'; position: absolute; inset: 0; background: linear-gradient(105deg, transparent 40%, rgba(255,255,255,0.12) 50%, transparent 60%); -webkit-background-clip: text; background-clip: text; color: transparent; animation: logoSheen 5s ease-in-out infinite 2s; background-size: 200%; }
+@keyframes logoSheen { 0%{background-position:200% center;opacity:0} 10%{opacity:1} 40%{background-position:-100% center;opacity:1} 50%,100%{background-position:-100% center;opacity:0} }
+
+.tagline { font-size: clamp(0.34rem, 1.3vw, 0.52rem); font-weight: 100; letter-spacing: 0.55em; text-transform: uppercase; color: var(--text-muted); opacity: 0; animation: riseIn 1.4s cubic-bezier(0.16,1,0.3,1) 0.7s forwards; }
+
+.divider { display: flex; align-items: center; width: min(480px, 80vw); gap: 1.5rem; margin: clamp(1rem, 3.5vw, 2.8rem) 0; opacity: 0; animation: riseIn 1.2s cubic-bezier(0.16,1,0.3,1) 0.9s forwards; }
+.divider-line { flex: 1; height: 1px; background: linear-gradient(to right, transparent, var(--border-b), transparent); }
+.divider-glyph { font-family: 'Cormorant Garamond', serif; font-size: clamp(0.5rem, 1.2vw, 0.7rem); color: var(--gold-dim); letter-spacing: 0.3em; }
+
+.countdown { display: flex; align-items: flex-start; gap: 0; opacity: 0; animation: riseIn 1.2s cubic-bezier(0.16,1,0.3,1) 1.1s forwards; }
+.cd-sep { font-family: 'Cormorant Garamond', serif; font-size: clamp(1.4rem, 5.5vw, 3.5rem); font-weight: 200; color: var(--gold-dim); line-height: 1; padding: 0 clamp(0.15rem, 0.8vw, 0.3rem); margin-top: 0.1em; opacity: 0.5; }
+.cd-unit { display: flex; flex-direction: column; align-items: center; gap: 0.5rem; min-width: clamp(48px, 14vw, 90px); }
+.cd-num-wrap { position: relative; overflow: hidden; height: clamp(2.2rem, 9vw, 5rem); display: flex; align-items: center; justify-content: center; }
+.cd-num { font-family: 'Cormorant Garamond', serif; font-size: clamp(2rem, 8vw, 4.5rem); font-weight: 200; color: var(--text); line-height: 1; display: block; }
+.cd-num.exit { animation: numExit 0.22s ease forwards; }
+.cd-num.enter { animation: numEnter 0.25s cubic-bezier(0.34,1.56,0.64,1) forwards; }
+@keyframes numExit { to { transform: translateY(-120%); opacity: 0; } }
+@keyframes numEnter { from { transform: translateY(120%); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+.cd-label { font-size: clamp(0.28rem, 1vw, 0.42rem); font-weight: 100; letter-spacing: 0.45em; text-transform: uppercase; color: var(--text-muted); }
+
+.footer-row { margin-top: clamp(1rem, 3.5vw, 3rem); display: flex; align-items: center; gap: clamp(0.8rem, 2vw, 2rem); flex-wrap: wrap; justify-content: center; opacity: 0; animation: riseIn 1.2s cubic-bezier(0.16,1,0.3,1) 1.4s forwards; }
+.status-pill { display: flex; align-items: center; gap: 0.6rem; border: 1px solid var(--border); padding: 0.4rem 1rem; }
+.status-dot { width: 4px; height: 4px; border-radius: 50%; background: var(--gold-dim); animation: dotBlink 2s ease-in-out infinite; }
+.status-dot.live { background: #6dcf8a; box-shadow: 0 0 8px rgba(109,207,138,0.5); animation: dotLive 1.5s ease-in-out infinite; }
+@keyframes dotBlink { 0%,100%{opacity:1} 50%{opacity:0.2} }
+@keyframes dotLive { 0%,100%{opacity:1;box-shadow:0 0 8px rgba(109,207,138,0.5)} 50%{opacity:0.7;box-shadow:0 0 16px rgba(109,207,138,0.8)} }
+.status-text { font-size: clamp(0.36rem, 1.2vw, 0.48rem); font-weight: 100; letter-spacing: 0.4em; text-transform: uppercase; color: var(--text-muted); }
+.open-date { font-size: clamp(0.36rem, 1.2vw, 0.48rem); font-weight: 100; letter-spacing: 0.35em; color: var(--text-muted); }
+
+/* ── フラッシュ（非使用） ── */
+.open-flash { display: none; }
+
+/* ══════════════════════════════════════════
+   プレミアム演出
+══════════════════════════════════════════ */
+.blackout {
+  position: fixed; inset: 0;
+  background: #000;
+  opacity: 0;
+  z-index: 145;
+  pointer-events: none;
+  transition: opacity 2.2s cubic-bezier(0.4,0,0.2,1);
+}
+.blackout.on { opacity: 1; }
+
+.spotlight-stage {
+  position: fixed; inset: 0;
+  z-index: 146; pointer-events: none;
+}
+
+.gold-line {
+  position: fixed;
+  left: 0; right: 0;
+  height: 1px;
+  top: 50%;
+  background: linear-gradient(to right,
+    transparent 0%,
+    rgba(201,169,110,0) 15%,
+    rgba(232,213,163,0.9) 40%,
+    rgba(255,245,200,1) 50%,
+    rgba(232,213,163,0.9) 60%,
+    rgba(201,169,110,0) 85%,
+    transparent 100%
+  );
+  z-index: 147;
+  transform: scaleX(0);
+  pointer-events: none;
+  box-shadow: 0 0 12px rgba(201,169,110,0.6), 0 0 30px rgba(201,169,110,0.2);
+}
+.gold-line.draw {
+  animation: lineDraw 1.0s cubic-bezier(0.16,1,0.3,1) forwards;
+}
+@keyframes lineDraw {
+  0%   { transform: scaleX(0); opacity: 0; }
+  10%  { opacity: 1; }
+  100% { transform: scaleX(1); opacity: 1; }
+}
+.gold-line.fade { animation: lineFade 0.6s ease forwards; }
+@keyframes lineFade { to { opacity: 0; } }
+
+.grand-open-text {
+  position: fixed; inset: 0;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  z-index: 161; pointer-events: none;
+  text-align: center;
+}
+.grand-open-word {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(5rem, 20vw, 13rem);
+  font-weight: 200;
+  color: var(--gold-light);
+  letter-spacing: 0.25em;
+  text-indent: 0.25em;
+  line-height: 1;
+  width: 100%; text-align: center;
+  opacity: 0;
+  text-shadow:
+    0 0 40px rgba(232,213,163,0.5),
+    0 0 100px rgba(201,169,110,0.25);
+}
+.grand-open-date {
+  font-family: 'Josefin Sans', sans-serif;
+  font-size: clamp(0.36rem, 1.4vw, 0.55rem);
+  font-weight: 100;
+  letter-spacing: 0.6em; text-indent: 0.6em;
+  text-transform: uppercase;
+  color: var(--gold-dim);
+  margin-top: 1.8rem;
+  opacity: 0;
+  width: 100%; text-align: center;
+}
+.grand-open-sub {
+  font-family: 'Josefin Sans', sans-serif;
+  font-size: clamp(0.34rem, 1.2vw, 0.5rem);
+  font-weight: 100;
+  letter-spacing: 0.55em; text-indent: 0.55em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-top: 0.6rem;
+  opacity: 0;
+  width: 100%; text-align: center;
+}
+
+/* ══════════════════════════════════════════
+   OPEN OVERLAY
+══════════════════════════════════════════ */
+.open-overlay {
+  position: fixed; inset: 0;
+  background: var(--bg);
+  opacity: 0; pointer-events: none;
+  z-index: 100; overflow-y: auto;
+  display: flex; flex-direction: column;
+}
+.open-overlay.show {
+  animation: openReveal 1.2s ease forwards;
+  pointer-events: all;
+}
+@keyframes openReveal { from{opacity:0} to{opacity:1} }
+
+/* ヘッダー */
+.open-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: clamp(3rem, 8vw, 6rem) 2rem clamp(2rem, 5vw, 3rem);
+  position: relative;
+  text-align: center;
+  flex-shrink: 0;
+}
+.open-header::after {
+  content: '';
+  position: absolute;
+  bottom: 0; left: 50%; transform: translateX(-50%);
+  width: min(600px, 80vw);
+  height: 1px;
+  background: linear-gradient(to right, transparent, var(--border-b), transparent);
+}
+.open-eyebrow {
+  font-size: clamp(0.38rem, 1.2vw, 0.5rem);
+  font-weight: 100;
+  letter-spacing: 0.7em;
+  text-transform: uppercase;
+  color: var(--gold-dim);
+  opacity: 0;
+  animation: riseIn 0.8s ease 0.4s forwards;
+  margin-bottom: 0.6rem;
+}
+.open-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(3.5rem, 14vw, 8rem);
+  font-weight: 200;
+  color: var(--gold);
+  letter-spacing: 0.35em;
+  padding-right: 0.35em;
+  line-height: 1;
+  opacity: 0;
+  animation: riseIn 1.2s cubic-bezier(0.16,1,0.3,1) 0.6s forwards;
+}
+.open-sub {
+  font-size: clamp(0.38rem, 1.4vw, 0.55rem);
+  font-weight: 100;
+  letter-spacing: 0.5em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  margin-top: 1rem;
+  opacity: 0;
+  animation: riseIn 0.8s ease 1s forwards;
+}
+
+/* カードグリッド */
+.open-cards {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1px;
+  background: var(--border);
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+
+.open-card {
+  background: var(--bg2);
+  padding: clamp(1.5rem, 4vw, 2.5rem) clamp(1.5rem, 4vw, 3rem);
+  opacity: 0;
+  animation: riseIn 0.8s ease forwards;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+.open-card.featured {
+  grid-column: 1 / -1;
+  background: linear-gradient(135deg, var(--bg2) 0%, rgba(201,169,110,0.04) 100%);
+  border-bottom: 1px solid var(--border);
+  padding: clamp(2rem, 5vw, 3rem) clamp(1.5rem, 5vw, 3.5rem);
+}
+.open-card:nth-child(1) { animation-delay: 1.2s; }
+.open-card:nth-child(2) { animation-delay: 1.5s; }
+.open-card:nth-child(3) { animation-delay: 1.8s; }
+
+.card-eyebrow {
+  font-family: 'Josefin Sans', sans-serif;
+  font-size: clamp(0.34rem, 1.1vw, 0.46rem);
+  font-weight: 100;
+  letter-spacing: 0.55em;
+  text-transform: uppercase;
+  color: var(--gold-dim);
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+}
+.card-eyebrow::before {
+  content: '';
+  display: block;
+  width: 18px;
+  height: 1px;
+  background: var(--gold-dim);
+  flex-shrink: 0;
+}
+.card-eyebrow.alert { color: rgba(220,140,140,0.85); }
+.card-eyebrow.alert::before { background: rgba(220,140,140,0.6); }
+
+.card-title-main {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(1.8rem, 5vw, 3rem);
+  font-weight: 300;
+  color: var(--text);
+  letter-spacing: 0.04em;
+  line-height: 1.1;
+}
+.card-title-main em { color: var(--gold); font-style: italic; }
+
+.card-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(1.3rem, 3.5vw, 2rem);
+  font-weight: 300;
+  color: var(--text);
+  letter-spacing: 0.04em;
+  line-height: 1.2;
+}
+.card-title em { color: var(--gold); font-style: italic; }
+
+.card-body {
+  font-size: clamp(0.74rem, 1.9vw, 0.84rem);
+  color: var(--text-dim);
+  line-height: 1.9;
+}
+.card-body strong { color: var(--text); font-weight: 400; }
+
+/* 評価ポイント */
+.eval-points {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  margin-top: 0.3rem;
+}
+.eval-point {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.8rem;
+  font-size: clamp(0.7rem, 1.8vw, 0.8rem);
+  color: var(--text-dim);
+  line-height: 1.6;
+}
+.eval-point-marker {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(0.85rem, 2.2vw, 1rem);
+  color: var(--gold-dim);
+  flex-shrink: 0;
+  line-height: 1.4;
+}
+.eval-point span { color: var(--text); }
+
+/* 裁判ステップ */
+.court-steps {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  margin-top: 0.3rem;
+}
+.court-step {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.8rem;
+  font-size: clamp(0.68rem, 1.7vw, 0.78rem);
+  color: var(--text-dim);
+  line-height: 1.6;
+  padding: 0.6rem 0;
+  border-bottom: 1px solid var(--border);
+}
+.court-step:last-child { border-bottom: none; }
+.court-step-num {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(1rem, 2.5vw, 1.2rem);
+  color: var(--gold-dim);
+  flex-shrink: 0;
+  line-height: 1.2;
+  min-width: 1.3rem;
+  text-align: center;
+}
+.court-step span { color: var(--text); }
+
+/* フッター */
+.open-footer {
+  padding: clamp(1.5rem, 4vw, 2.5rem) clamp(1.5rem, 4vw, 3rem);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1rem;
+  flex-shrink: 0;
+  opacity: 0;
+  animation: riseIn 0.8s ease 2s forwards;
+}
+.open-footer-left {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(0.8rem, 2vw, 1rem);
+  font-style: italic;
+  color: var(--text-muted);
+  letter-spacing: 0.1em;
+}
+.open-footer-badge {
+  font-family: 'Josefin Sans', sans-serif;
+  font-size: clamp(0.32rem, 1vw, 0.44rem);
+  font-weight: 100;
+  letter-spacing: 0.4em;
+  text-transform: uppercase;
+  color: var(--gold-dim);
+  border: 1px solid var(--border-b);
+  padding: 0.4rem 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.live-dot {
+  width: 5px; height: 5px;
+  border-radius: 50%;
+  background: #6dcf8a;
+  box-shadow: 0 0 8px rgba(109,207,138,0.6);
+  animation: dotLive 1.5s ease-in-out infinite;
+  flex-shrink: 0;
+}
+
+/* ── アニメーション ── */
+@keyframes riseIn { from{opacity:0;transform:translateY(12px)} to{opacity:1;transform:translateY(0)} }
+
+/* Wiki ボタン */
+.wiki-btn {
+  display: inline-flex;
+  align-items: center;
+  font-family: 'Josefin Sans', sans-serif;
+  font-size: clamp(0.38rem, 1.2vw, 0.5rem);
+  font-weight: 300;
+  letter-spacing: 0.4em;
+  text-transform: uppercase;
+  color: var(--gold);
+  text-decoration: none;
+  border: 1px solid var(--border-b);
+  padding: 0.5rem 1.2rem;
+  margin-top: 0.5rem;
+  transition: background 0.2s, color 0.2s;
+  align-self: flex-start;
+}
+.wiki-btn:hover { background: rgba(201,169,110,0.08); }
+
+.wiki-btn-footer {
+  font-family: 'Josefin Sans', sans-serif;
+  font-size: clamp(0.34rem, 1vw, 0.46rem);
+  font-weight: 100;
+  letter-spacing: 0.4em;
+  text-transform: uppercase;
+  color: var(--gold);
+  text-decoration: none;
+  border: 1px solid var(--border-b);
+  padding: 0.4rem 1rem;
+  transition: background 0.2s;
+}
+.wiki-btn-footer:hover { background: rgba(201,169,110,0.08); }
+
+/* ══════════════════════
+   スマホ対応
+══════════════════════ */
+@media (max-width: 600px) {
+  .open-cards { grid-template-columns: 1fr; }
+  .open-card.featured { grid-column: 1; }
+  .open-footer { flex-direction: column; align-items: flex-start; }
+}
+
+@media (max-height: 480px) and (orientation: landscape) {
+  .crown { margin-bottom: 0.5rem; }
+  .divider { margin: 0.6rem 0; }
+  .footer-row { margin-top: 0.6rem; }
+  .scene { padding: 1rem; }
+}
+</style>
+</head>
+<body>
+<div class="stars" id="stars"></div>
+<div class="radiance"></div>
+<div class="logo-bg"></div>
+<div class="grain"></div>
+<div class="scanlines"></div>
+<div class="curtain top"></div>
+<div class="curtain bottom"></div>
+
+<div class="open-flash" id="open-flash"></div>
+<div class="blackout"           id="blackout"></div>
+<canvas class="spotlight-stage" id="spotlight-stage"></canvas>
+<div class="gold-line"          id="gold-line"></div>
+<div class="grand-open-text"    id="grand-open-text">
+  <div class="grand-open-word" id="open-word">OPEN</div>
+  <div class="grand-open-date" id="open-date">2026 · 02 · 26</div>
+  <div class="grand-open-sub"  id="open-sub">The stage is now yours</div>
+</div>
+
+<!-- OPEN OVERLAY -->
+<div class="open-overlay" id="open-overlay">
+  <div class="open-header">
+    <div class="open-eyebrow">2026 · 02 · 26 · 00:00</div>
+    <div class="open-title">OPEN</div>
+    <div class="open-sub">The stage is now yours</div>
+  </div>
+
+  <div class="open-cards">
+    <!-- 評価開始（最重要・全幅） -->
+    <div class="open-card featured">
+      <div class="card-eyebrow alert">最重要 — 本日より開始</div>
+      <div class="card-title-main">評価が、<em>始まる</em></div>
+      <div class="card-body">
+        ON AIRカテゴリの全VCが今日から評価対象になります。
+        <strong>選定者（評価員）</strong>があなたの声・話術・存在感・空気感を審査し、投票によって階級が決まります。
+      </div>
+      <div class="eval-points">
+        <div class="eval-point">
+          <div class="eval-point-marker">◆</div>
+          <div><span>声の魅力 / 話術力 / 間の取り方</span> — 1回の評価につき10数名の選定者が投票</div>
+        </div>
+        <div class="eval-point">
+          <div class="eval-point-marker">◆</div>
+          <div><span>画面共有・ビデオ・音楽Bot・スタジオ寝落ち</span>は禁止。3回で無名落ち</div>
+        </div>
+        <div class="eval-point">
+          <div class="eval-point-marker">◆</div>
+          <div>STELLAは<span>完全実力主義</span>。輝き続けた者だけが上へ進む</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 裁判所 -->
+    <div class="open-card">
+      <div class="card-eyebrow">本日より公開</div>
+      <div class="card-title">裁判<em>所</em></div>
+      <div class="card-body">個人間のトラブルはここで解決。</div>
+      <div class="court-steps">
+        <div class="court-step">
+          <div class="court-step-num">①</div>
+          <div><span>#訴訟受付</span>でチケット発行・管理者へ共有</div>
+        </div>
+        <div class="court-step">
+          <div class="court-step-num">②</div>
+          <div>管理者審査 → 訴状提出</div>
+        </div>
+        <div class="court-step">
+          <div class="court-step-num">③</div>
+          <div><span>和解</span> or <span>裁判</span> を選択</div>
+        </div>
+        <div class="court-step">
+          <div class="court-step-num">④</div>
+          <div>双方が<span>弁護士1名</span>を雇い開廷</div>
+        </div>
+        <div class="court-step">
+          <div class="court-step-num">⑤</div>
+          <div>裁判官2名＋民意票1票 計<span>3票</span>で判決</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Wiki -->
+    <div class="open-card">
+      <div class="card-eyebrow">ガイド</div>
+      <div class="card-title">STELLA <em>Wiki</em></div>
+      <div class="card-body">
+        知らなかったでは済まされない。全てのルールはWikiにある。
+      </div>
+      <div class="eval-points" style="margin-top:0.3rem;">
+        <div class="eval-point">
+          <div class="eval-point-marker">◌</div>
+          <div>スター / キャスト / 候補生 / エキストラ / 無名</div>
+        </div>
+        <div class="eval-point">
+          <div class="eval-point-marker">◌</div>
+          <div>Stell の稼ぎ方・ショップ・階級給</div>
+        </div>
+        <div class="eval-point">
+          <div class="eval-point-marker">◌</div>
+          <div>サブロール（美声者・話術者）の付与条件</div>
+        </div>
+      </div>
+      <a href="https://ashina814.github.io/StellaWiki/" target="_blank" class="wiki-btn">Wiki を開く →</a>
+    </div>
+  </div>
+
+  <div class="open-footer">
+    <div class="open-footer-left">声と話術で、自らの価値を証明せよ。</div>
+    <div style="display:flex;align-items:center;gap:1rem;flex-wrap:wrap;">
+      <a href="https://ashina814.github.io/StellaWiki/" target="_blank" class="wiki-btn-footer">STELLA Wiki →</a>
+      <div class="open-footer-badge">
+        <div class="live-dot"></div>
+        Now Live — STELLA
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- COUNTDOWN SCENE -->
+<div class="scene" id="scene">
+  <div class="crown">
+    <div class="crown-line">
+      <div class="crown-rule"></div>
+      <div class="crown-diamond">✦ ◆ ✦</div>
+      <div class="crown-rule r"></div>
+    </div>
+    <div class="eyebrow">Grand Opening</div>
+  </div>
+
+  <div class="logo-wrap"><div class="logo">STELLA</div></div>
+  <div class="tagline">Voice &nbsp;·&nbsp; Skill &nbsp;·&nbsp; Presence</div>
+
+  <div class="divider">
+    <div class="divider-line"></div>
+    <div class="divider-glyph">◈</div>
+    <div class="divider-line"></div>
+  </div>
+
+  <div class="countdown">
+    <div class="cd-unit">
+      <div class="cd-num-wrap"><span class="cd-num" id="cd-h">00</span></div>
+      <div class="cd-label">Hours</div>
+    </div>
+    <div class="cd-sep">:</div>
+    <div class="cd-unit">
+      <div class="cd-num-wrap"><span class="cd-num" id="cd-m">00</span></div>
+      <div class="cd-label">Minutes</div>
+    </div>
+    <div class="cd-sep">:</div>
+    <div class="cd-unit">
+      <div class="cd-num-wrap"><span class="cd-num" id="cd-s">00</span></div>
+      <div class="cd-label">Seconds</div>
+    </div>
+  </div>
+
+  <div class="footer-row">
+    <div class="status-pill">
+      <div class="status-dot" id="status-dot"></div>
+      <div class="status-text" id="status-text">Pre-Open</div>
+    </div>
+    <div class="open-date">2026 · 02 · 26 · 00:00</div>
+  </div>
+</div>
+
+<script>
+const starsEl = document.getElementById('stars');
+for (let i = 0; i < 120; i++) {
+  const s = document.createElement('div');
+  s.className = 'star';
+  s.style.cssText = `left:${Math.random()*100}%;top:${Math.random()*100}%;--d:${3+Math.random()*6}s;--delay:${Math.random()*8}s;--max-opacity:${0.1+Math.random()*0.4};width:${Math.random()>0.85?2:1}px;height:${Math.random()>0.85?2:1}px;`;
+  starsEl.appendChild(s);
+}
+
+const TARGET = new Date('2026-02-26T00:00:00+09:00').getTime();
+const elH = document.getElementById('cd-h');
+const elM = document.getElementById('cd-m');
+const elS = document.getElementById('cd-s');
+const statusDot     = document.getElementById('status-dot');
+const statusText    = document.getElementById('status-text');
+const openOverlay   = document.getElementById('open-overlay');
+const blackoutEl    = document.getElementById('blackout');
+const spotCanvas    = document.getElementById('spotlight-stage');
+const goldLine      = document.getElementById('gold-line');
+const grandOpenText = document.getElementById('grand-open-text');
+const openWord      = document.getElementById('open-word');
+const openDate      = document.getElementById('open-date');
+const openSub       = document.getElementById('open-sub');
+
+let prevH='', prevM='', prevS='', opened=false;
+function pad(n){ return String(Math.floor(n)).padStart(2,'0'); }
+function animateNum(el, next) {
+  if (el.textContent === next) return;
+  el.classList.add('exit');
+  setTimeout(() => {
+    el.textContent = next; el.classList.remove('exit');
+    el.classList.add('enter');
+    setTimeout(() => el.classList.remove('enter'), 300);
+  }, 200);
+}
+
+function runSpotlights(duration, cb) {
+  const ctx = spotCanvas.getContext('2d');
+  spotCanvas.width  = window.innerWidth;
+  spotCanvas.height = window.innerHeight;
+  const W = spotCanvas.width, H = spotCanvas.height;
+  const cx = W / 2, cy = H / 2;
+  const spots = [
+    { ox: cx * 0.1, oy: -30, tx: cx * 0.6,  ty: cy, delay: 0   },
+    { ox: cx * 1.9, oy: -30, tx: cx * 1.4,  ty: cy, delay: 250 },
+  ];
+  const start = performance.now();
+  function ease(t) { return 1 - Math.pow(1 - t, 3); }
+  function draw(ts) {
+    const elapsed = ts - start;
+    ctx.clearRect(0, 0, W, H);
+    spots.forEach(sp => {
+      const loc = elapsed - sp.delay;
+      if (loc < 0) return;
+      const alpha = Math.min(1, loc / 500);
+      const prog  = ease(Math.min(1, loc / (duration * 0.8)));
+      const bx = sp.ox + (sp.tx - sp.ox) * prog;
+      const by = sp.oy + (sp.ty - sp.oy) * prog;
+      const dist = Math.hypot(bx - sp.ox, by - sp.oy);
+      const ang  = Math.atan2(by - sp.oy, bx - sp.ox);
+      const half = 0.16;
+      ctx.save();
+      ctx.beginPath();
+      ctx.moveTo(sp.ox, sp.oy);
+      ctx.arc(sp.ox, sp.oy, dist * 1.9, ang - half, ang + half);
+      ctx.closePath(); ctx.clip();
+      const cone = ctx.createRadialGradient(sp.ox, sp.oy, 0, sp.ox, sp.oy, dist * 1.9);
+      cone.addColorStop(0,    `rgba(255,250,230,${alpha * 0.55})`);
+      cone.addColorStop(0.3,  `rgba(232,213,163,${alpha * 0.28})`);
+      cone.addColorStop(0.65, `rgba(201,169,110,${alpha * 0.09})`);
+      cone.addColorStop(1,    'transparent');
+      ctx.fillStyle = cone; ctx.fillRect(0, 0, W, H); ctx.restore();
+      const gr = dist * 0.38;
+      const glow = ctx.createRadialGradient(bx, by, 0, bx, by, gr);
+      glow.addColorStop(0,   `rgba(255,252,235,${alpha * 0.6})`);
+      glow.addColorStop(0.5, `rgba(201,169,110,${alpha * 0.15})`);
+      glow.addColorStop(1,   'transparent');
+      ctx.beginPath(); ctx.arc(bx, by, gr, 0, Math.PI * 2);
+      ctx.fillStyle = glow; ctx.fill();
+    });
+    if (elapsed < duration) { requestAnimationFrame(draw); }
+    else {
+      let fadeStart = null;
+      function fadeOut(ts2) {
+        if (!fadeStart) fadeStart = ts2;
+        const fp = Math.min(1, (ts2 - fadeStart) / 800);
+        ctx.globalAlpha = 1 - fp;
+        if (fp < 1) requestAnimationFrame(fadeOut);
+        else { spotCanvas.style.display = 'none'; cb && cb(); }
+      }
+      requestAnimationFrame(fadeOut);
+    }
+  }
+  requestAnimationFrame(draw);
+}
+
+function fadeInEl(el, delay, duration, opts={}) {
+  setTimeout(() => {
+    el.style.transition = `opacity ${duration}ms ${opts.easing||'ease'}, transform ${duration}ms ${opts.easing||'ease'}`;
+    if (opts.translateY) el.style.transform = `translateY(${opts.translateY}px)`;
+    requestAnimationFrame(() => requestAnimationFrame(() => {
+      el.style.opacity = '1';
+      if (opts.translateY) el.style.transform = 'translateY(0)';
+    }));
+  }, delay);
+}
+
+function triggerOpen() {
+  opened = true;
+  blackoutEl.classList.add('on');
+  setTimeout(() => {
+    runSpotlights(2500, () => {
+      goldLine.classList.add('draw');
+      setTimeout(() => goldLine.classList.add('fade'), 1200);
+    });
+  }, 1600);
+  setTimeout(() => {
+    fadeInEl(openWord, 0,    1400, { easing: 'cubic-bezier(0.16,1,0.3,1)', translateY: 8 });
+    fadeInEl(openDate, 600,  1000, { easing: 'ease', translateY: 6 });
+    fadeInEl(openSub,  1000, 1000, { easing: 'ease', translateY: 6 });
+  }, 3800);
+  setTimeout(() => {
+    openOverlay.classList.add('show');
+    document.body.style.overflow = 'hidden';
+    statusDot.classList.add('live');
+    statusText.textContent = 'Open';
+    blackoutEl.style.transition = 'opacity 1s ease';
+    blackoutEl.style.opacity = '0';
+    grandOpenText.style.transition = 'opacity 1s ease';
+    grandOpenText.style.opacity = '0';
+  }, 6200);
+  setTimeout(() => {
+    [blackoutEl, spotCanvas, goldLine, grandOpenText].forEach(el => el.style.display = 'none');
+  }, 7300);
+}
+
+function tick() {
+  const diff = TARGET - Date.now();
+  if (diff <= 0) {
+    animateNum(elH,'00'); animateNum(elM,'00'); animateNum(elS,'00');
+    if (!opened) triggerOpen();
+    return;
+  }
+  const t = diff / 1000;
+  const h = pad(t / 3600);
+  const m = pad((t % 3600) / 60);
+  const s = pad(t % 60);
+  if (h!==prevH){ animateNum(elH,h); prevH=h; }
+  if (m!==prevM){ animateNum(elM,m); prevM=m; }
+  if (s!==prevS){ animateNum(elS,s); prevS=s; }
+  requestAnimationFrame(tick);
+}
+tick();
+</script>
+</body>
+</html>
