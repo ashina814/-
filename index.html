@@ -27,7 +27,7 @@ body {
 /* ── 背景エフェクト ── */
 .stars { position: fixed; inset: 0; pointer-events: none; z-index: 0; }
 .star { position: absolute; width: 1px; height: 1px; background: var(--gold-light); border-radius: 50%; animation: starTwinkle var(--d,4s) ease-in-out infinite var(--delay,0s); opacity: 0; }
-@keyframes starTwinkle { 0%,100%{opacity:0} 50%{opacity:var(--max-opacity,0.3)} }
+@keyframes starTwinkle { 0%,100%{opacity:0} 50%{opacity:var(--max-opacity,0.2)} }
 
 .radiance { position: fixed; top: 50%; left: 50%; transform: translate(-50%,-50%); width: min(900px,200vw); height: min(900px,200vw); background: radial-gradient(ellipse at center, rgba(201,169,110,0.05) 0%, rgba(100,60,20,0.03) 30%, transparent 65%); animation: radiancePulse 6s ease-in-out infinite; pointer-events: none; z-index: 0; }
 @keyframes radiancePulse { 0%,100%{opacity:0.6;transform:translate(-50%,-50%) scale(1)} 50%{opacity:1;transform:translate(-50%,-50%) scale(1.08)} }
